@@ -71,7 +71,7 @@
       '<button class="v-btn v-next" type="button" aria-label="Next project">' + ic('arrow') + '</button>' +
       '<div class="viewer-box"><div class="viewer-media"></div><div class="viewer-cap"><div><span class="cat"></span><h3></h3><p></p></div>' +
       '<div class="viewer-actions"><a class="btn btn-wa btn-sm" target="_blank" rel="noopener" href="' + esc(waUrl()) + '">' + ic('whatsapp', 'ic-fill') + ' WhatsApp</a>' +
-      '<a class="btn btn-sm" href="contact.html">Contact ' + ic('arrow') + '</a></div></div></div>';
+      '<a class="btn btn-sm" href="/contact">Contact ' + ic('arrow') + '</a></div></div></div>';
     doc.body.appendChild(viewer);
     viewer.addEventListener('click', function (e) { if (e.target === viewer) close(); });
     viewer.querySelector('.v-close').addEventListener('click', close);
