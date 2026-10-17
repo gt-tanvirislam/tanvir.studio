@@ -791,3 +791,10 @@ body { overflow-x: clip; }
   .site-header.hide { transform: none; }
   .menu-open .site-header { background: #fff; box-shadow: none; }
 }
+
+/* Final mobile menu rule: while closed it is not rendered at all, so it can never show through */
+@media (max-width: 900px) {
+  .nav-links { display: none !important; }
+  .menu-open .nav-links { display: flex !important; visibility: visible; opacity: 1; transform: none; animation: menuIn .45s var(--ease) both; }
+}
+@keyframes menuIn { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: none; } }
