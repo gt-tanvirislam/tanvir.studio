@@ -149,15 +149,7 @@
       e.preventDefault();
       var btn = $('button', this); btn.disabled = true;
       var r = await sb.auth.signInWithPassword({ email: $('#em').value.trim(), password: $('#pw').value });
-      if (r.error) {
-        btn.disabled = false;
-        var msg = r.error.message || 'Login failed';
-        if (/fetch|network|load failed/i.test(msg)) {
-          var looksOk = /^https:\/\/[a-z0-9-]+\.supabase\.(co|in)\/?$/i.test(cfg.SUPABASE_URL);
-          msg = 'Could not reach Supabase at ' + cfg.SUPABASE_URL + '. ' + (looksOk ? 'The address looks right, so check that the project is active (not paused), try another network, and turn off ad blockers.' : 'This address does not look right. It should be like https://abcdefghij.supabase.co (Project Settings > API > Project URL).');
-        }
-        return renderLogin(msg);
-      }
+      if (r.error) { btn.disabled = false; return renderLogin(r.error.message); }
       boot();
     });
   }
@@ -536,7 +528,7 @@
       if (heads < 2) add('warn', 'Add at least two subheadings (Heading or Subheading buttons) to structure the article.'); else add('good', heads + ' subheadings. Easy to scan.');
       if (!imgs.length) add('warn', 'Add at least one image inside the article.'); else if (noAlt) add('bad', noAlt + ' image(s) have no description. Double-click an image to add one.'); else add('good', imgs.length + ' image(s), all with descriptions.');
       if (!$('#cv').value.trim()) add('warn', 'Add a cover image.'); else if (!$('#cva').value.trim()) add('warn', 'Add a description for the cover image.'); else add('good', 'Cover image and description set.');
-      if (!links) add('warn', 'Link to one of your own pages, for example /services or /contact.'); else add('good', links + ' internal link(s).');
+      if (!links) add('warn', 'Link to one of your own pages, for example /services.html or /contact.html.'); else add('good', links + ' internal link(s).');
       $('#seolist').innerHTML = out.join('');
     }
     var seoTimer; function seoSoon() { clearTimeout(seoTimer); seoTimer = setTimeout(seoCheck, 250); }
