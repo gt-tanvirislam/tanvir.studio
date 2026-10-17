@@ -131,7 +131,7 @@
           (p.is_popular ? '<span class="badge">' + ic('star') + ' Most chosen</span>' : '') +
           '<h3>' + esc(p.name) + '</h3><p>' + esc(p.description) + '</p>' +
           '<div class="price">$' + Number(p.price).toLocaleString('en-US') + '<small>' + esc(p.unit) + '</small></div>' +
-          '<ul>' + feats + '</ul><a class="btn" href="' + esc(num ? waLink(num, msg) : '/contact') + '" target="_blank" rel="noopener">Choose ' + esc(p.name) + ' ' + ic('arrow') + '</a></article>';
+          '<ul>' + feats + '</ul><a class="btn" href="' + esc(num ? waLink(num, msg) : 'contact.html') + '" target="_blank" rel="noopener">Choose ' + esc(p.name) + ' ' + ic('arrow') + '</a></article>';
       }).join('');
     });
   }
@@ -153,10 +153,10 @@
     if (!rows.length) { box.innerHTML = '<div class="empty-note"><h3>No articles yet</h3><p>New articles will appear here soon.</p></div>'; return; }
     var meta = function (p) { return '<div class="post-meta"><span>' + ic('calendar') + fmtDate(p.published_at) + '</span>' + (p.read_time ? '<span>' + ic('clock') + esc(p.read_time) + '</span>' : '') + '</div>'; };
     var f = rows[0];
-    var html = '<a class="post-feature" href="/blog/' + encodeURIComponent(f.slug) + '" data-reveal="up"><div class="thumb" style="position:relative">' + thumb(f, 0) + '</div><div class="body"><span class="cat">' + esc(f.category) + '</span><h2 style="font-size:clamp(1.6rem,2.8vw,2.3rem)">' + esc(f.title) + '</h2><p>' + esc(f.excerpt) + '</p>' + meta(f) + '<span class="read">Read the article ' + ic('arrow') + '</span></div></a>';
+    var html = '<a class="post-feature" href="blog/' + encodeURIComponent(f.slug) + '" data-reveal="up"><div class="thumb" style="position:relative">' + thumb(f, 0) + '</div><div class="body"><span class="cat">' + esc(f.category) + '</span><h2 style="font-size:clamp(1.6rem,2.8vw,2.3rem)">' + esc(f.title) + '</h2><p>' + esc(f.excerpt) + '</p>' + meta(f) + '<span class="read">Read the article ' + ic('arrow') + '</span></div></a>';
     if (rows.length > 1) {
       html += '<div class="post-grid">' + rows.slice(1).map(function (p, i) {
-        return '<a class="post-card" href="/blog/' + encodeURIComponent(p.slug) + '" data-reveal="up" data-delay="' + ((i % 3) * 120) + '"><div class="thumb">' + thumb(p, i + 1) + '</div><span class="cat">' + esc(p.category) + '</span><h3>' + esc(p.title) + '</h3><p>' + esc(p.excerpt) + '</p>' + meta(p) + '<span class="read">Read more ' + ic('arrow') + '</span></a>';
+        return '<a class="post-card" href="blog/' + encodeURIComponent(p.slug) + '" data-reveal="up" data-delay="' + ((i % 3) * 120) + '"><div class="thumb">' + thumb(p, i + 1) + '</div><span class="cat">' + esc(p.category) + '</span><h3>' + esc(p.title) + '</h3><p>' + esc(p.excerpt) + '</p>' + meta(p) + '<span class="read">Read more ' + ic('arrow') + '</span></a>';
       }).join('') + '</div>';
     }
     box.innerHTML = html;

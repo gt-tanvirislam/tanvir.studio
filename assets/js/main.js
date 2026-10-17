@@ -122,7 +122,7 @@
     if (header) {
       header.classList.toggle('scrolled', y > 24);
       var open = body.classList.contains('menu-open');
-      header.classList.toggle('hide', !open && window.innerWidth > 900 && y > 500 && y > lastY + 6);
+      header.classList.toggle('hide', !open && y > 500 && y > lastY + 6);
       if (y < lastY - 6) header.classList.remove('hide');
     }
     if (toTop) toTop.classList.toggle('show', y > 700);
@@ -150,16 +150,6 @@
     });
     doc.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && body.classList.contains('menu-open')) menuBtn.click();
-    });
-  }
-
-  /* ---------- Opening the files straight from a folder: use .html links ---------- */
-  if (location.protocol === 'file:') {
-    var LOCAL = { '/': 'index.html', '/about': 'about.html', '/services': 'services.html', '/portfolio': 'portfolio.html', '/pricing': 'pricing.html', '/blog': 'blog.html', '/contact': 'contact.html' };
-    $$('a[href^="/"]').forEach(function (a) {
-      var h = a.getAttribute('href'), hash = '', i = h.indexOf('#');
-      if (i > -1) { hash = h.slice(i); h = h.slice(0, i); }
-      if (LOCAL[h]) a.setAttribute('href', LOCAL[h] + hash);
     });
   }
 

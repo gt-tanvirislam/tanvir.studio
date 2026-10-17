@@ -4,7 +4,7 @@ const { getCfg, getOrigin, sb } = require('../lib/cfg.js');
 module.exports = async (req, res) => {
   const origin = getOrigin(req);
   const today = new Date().toISOString().slice(0, 10);
-  const pages = [['', '1.0'], ['services', '0.9'], ['portfolio', '0.9'], ['pricing', '0.8'], ['contact', '0.8'], ['about', '0.7'], ['blog', '0.7']];
+  const pages = [['', '1.0'], ['services.html', '0.9'], ['portfolio.html', '0.9'], ['pricing.html', '0.8'], ['contact.html', '0.8'], ['about.html', '0.7'], ['blog.html', '0.7']];
   let urls = pages.map(([p, pr]) => `  <url><loc>${origin}/${p}</loc><lastmod>${today}</lastmod><changefreq>monthly</changefreq><priority>${pr}</priority></url>`);
   const cfg = getCfg();
   if (cfg.url) {

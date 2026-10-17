@@ -28,7 +28,7 @@ const thumb = (p, i) => p.cover_url
 function page404(res, msg) {
   res.statusCode = 404;
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Article not found | Tanvir.Studio</title><style>body{font-family:system-ui,sans-serif;display:grid;place-items:center;min-height:100vh;margin:0;background:#f3f7ff;color:#0c1a45;text-align:center}a{display:inline-block;margin-top:18px;padding:14px 26px;border-radius:14px;background:#2252ff;color:#fff;text-decoration:none;font-weight:700}</style></head><body><div><h1>${esc(msg || 'Article not found')}</h1><p>The article may have been moved or unpublished.</p><a href="/blog">Back to the blog</a></div></body></html>`);
+  res.end(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Article not found | Tanvir.Studio</title><style>body{font-family:system-ui,sans-serif;display:grid;place-items:center;min-height:100vh;margin:0;background:#f3f7ff;color:#0c1a45;text-align:center}a{display:inline-block;margin-top:18px;padding:14px 26px;border-radius:14px;background:#2252ff;color:#fff;text-decoration:none;font-weight:700}</style></head><body><div><h1>${esc(msg || 'Article not found')}</h1><p>The article may have been moved or unpublished.</p><a href="/blog.html">Back to the blog</a></div></body></html>`);
 }
 
 module.exports = async (req, res) => {
@@ -65,7 +65,7 @@ module.exports = async (req, res) => {
         publisher: { '@id': origin + '/#organization' } },
       { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
         { '@type': 'ListItem', position: 1, name: 'Home', item: origin + '/' },
-        { '@type': 'ListItem', position: 2, name: 'Blog', item: origin + '/blog' },
+        { '@type': 'ListItem', position: 2, name: 'Blog', item: origin + '/blog.html' },
         { '@type': 'ListItem', position: 3, name: post.title, item: shareUrl } ] },
     ].map((o) => `<script type="application/ld+json">${JSON.stringify(o).replace(/</g, '\\u003c')}</script>`).join('\n');
 
