@@ -758,3 +758,42 @@
   }
   boot();
 })();
+/* Tanvir.Studio | Dashboard: "Design projects" manager (Behance style projects)
+   NEW FILE: add it as admin/design-projects.js */
+(function () {
+  'use strict';
+  var cfg = window.TS_CONFIG || {};
+  if (!window.supabase || !cfg.SUPABASE_URL || /YOUR_/.test(cfg.SUPABASE_URL + cfg.SUPABASE_ANON_KEY)) return;
+  var sb = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);   /* shares the same login session */
+  var doc = document;
+  function $(s, c) { return (c || doc).querySelector(s); }
+  function $$(s, c) { return Array.prototype.slice.call((c || doc).querySelectorAll(s)); }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function slugify(s) { return String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80); }
+  function toast(msg, type) { var t = doc.createElement('div'); t.className = 'toast ' + (type || ''); t.textContent = msg; ($('#toasts') || doc.body).appendChild(t); setTimeout(function () { t.remove(); }, type === 'err' ? 6000 : 3000); }
+  var P = {
+    pen: '<path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.6 7.6"/><circle cx="11" cy="11" r="2"/>',
+    up: '<path d="M18 15l-6-6-6 6"/>', down: '<path d="M6 9l6 6 6-6"/>', trash: '<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6"/>', edit: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>', upload: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>'
+  };
+  function ico(n) { return '<svg class="i" viewBox="0 0 24 24" aria-hidden="true">' + P[n] + '</svg>'; }
+
+  var st = doc.createElement('style');
+  st.textContent = '.dpb{display:grid;grid-template-columns:130px 1fr auto;gap:14px;background:#fff;border-radius:16px;box-shadow:0 0 0 1px #e4eaf8;padding:14px;margin-bottom:12px}' +
+    '.dpb .pv{width:130px;height:96px;border-radius:12px;background:#e3ecff;object-fit:cover;display:block}.dpb .pv.t{display:grid;place-items:center;font-weight:800;color:#1739c9;font-size:.85rem;text-align:center}' +
+    '.dpb .ctl{display:flex;flex-direction:column;gap:6px}.dpb label.f{margin-top:8px}.dpb label.f:first-child{margin-top:0}.dpb textarea{min-height:90px}' +
+    '@media(max-width:700px){.dpb{grid-template-columns:1fr}.dpb .pv{width:100%;height:150px}.dpb .ctl{flex-direction:row}}' +
+    '.dp-add{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 16px}.dpnum{font-weight:800;color:#2252ff;font-size:.8rem}';
+  doc.head.appendChild(st);
+
+  /* ---------- sidebar button ---------- */
+  var navBtn = null;
+  function addNav() {
+    var nav = $('.side nav');
+    if (!nav || $('[data-dpnav]', nav)) return;
+    navBtn = doc.createElement('button'); navBtn.setAttribute('data-dpnav', ''); navBtn.innerHTML = ico('pen') + 'Design projects';
+    var after = $('[data-view="portfolio"]', nav);
+    if (after && after.nextSibling) nav.insertBefore(navBtn, after.nextSibling); else nav.appendChild(navBtn);
+    navBtn.onclick = function () { var sh = $('#shell'); if (sh) sh.classList.remove('open'); $$('.side nav button').forEach(function (b) { b.classList.remove('on'); }); navBtn.classList.add('on'); showList(); };
+    nav.addEventListener('click', function (e) { var b = e.target.closest('button[data-view]'); if (b && navBtn) navBtn.classList.remove('on'); });
+  }
