@@ -122,7 +122,7 @@
     if (header) {
       header.classList.toggle('scrolled', y > 24);
       var open = body.classList.contains('menu-open');
-      header.classList.toggle('hide', !open && y > 500 && y > lastY + 6);
+      header.classList.toggle('hide', !open && window.innerWidth > 900 && y > 500 && y > lastY + 6);
       if (y < lastY - 6) header.classList.remove('hide');
     }
     if (toTop) toTop.classList.toggle('show', y > 700);
@@ -150,6 +150,16 @@
     });
     doc.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && body.classList.contains('menu-open')) menuBtn.click();
+    });
+  }
+
+  /* ---------- Opening the files straight from a folder: use .html links ---------- */
+  if (location.protocol === 'file:') {
+    var LOCAL = { '/': 'index.html', '/about': 'about.html', '/services': 'services.html', '/portfolio': 'portfolio.html', '/pricing': 'pricing.html', '/blog': 'blog.html', '/contact': 'contact.html' };
+    $$('a[href^="/"]').forEach(function (a) {
+      var h = a.getAttribute('href'), hash = '', i = h.indexOf('#');
+      if (i > -1) { hash = h.slice(i); h = h.slice(0, i); }
+      if (LOCAL[h]) a.setAttribute('href', LOCAL[h] + hash);
     });
   }
 
@@ -367,4 +377,64 @@
   $$('[data-year]').forEach(function (el) { el.textContent = new Date().getFullYear(); });
   }
   (window.TSReady || Promise.resolve()).then(run);
+})();
+
+/* ===== Latest 3 blog posts on the home page (paste at the very bottom of assets/js/main.js) ===== */
+(function () {
+  function start() {
+    var root = document.documentElement;
+    var isHome = root.getAttribute('data-page') === 'home' || /^\/?(index(\.html)?)?$/.test(location.pathname.replace(/^.*\/(?=[^/]*$)/, '/'));
+    var cfg = window.TS_CONFIG || {};
+    if (!isHome || !cfg.SUPABASE_URL || /YOUR_/.test(cfg.SUPABASE_URL + cfg.SUPABASE_ANON_KEY)) return;
+    if (document.querySelector('[data-blog-latest]')) return;
+    var cta = document.querySelector('.cta-panel');
+    var anchor = (cta && cta.closest('section')) || document.querySelector('.site-footer');
+    if (!anchor) return;
+
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+    function icon(n) { return '<svg class="ic" aria-hidden="true" focusable="false"><use href="#i-' + n + '"/></svg>'; }
+    function fmt(d) { try { return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }); } catch (e) { return ''; } }
+    var ART = [
+      '<rect width="100" height="100" fill="#2252ff"/><circle cx="68" cy="34" r="22" fill="#6a4bff"/><circle cx="68" cy="34" r="9" fill="#22c7ff"/><rect x="10" y="64" width="52" height="8" rx="4" fill="#fff"/><rect x="10" y="78" width="34" height="8" rx="4" fill="#081338"/>',
+      '<rect width="100" height="100" fill="#e3ecff"/><circle cx="32" cy="68" r="34" fill="#2252ff"/><circle cx="72" cy="28" r="16" fill="none" stroke="#6a4bff" stroke-width="6"/>',
+      '<rect width="100" height="100" fill="#081338"/><polygon points="20,80 50,20 80,80" fill="#2252ff"/><circle cx="74" cy="26" r="9" fill="#22c7ff"/><rect x="14" y="86" width="72" height="3" fill="#fff"/>'
+    ];
+
+    var sec = document.createElement('section');
+    sec.className = 'section section-sky';
+    sec.setAttribute('data-blog-latest', '');
+    sec.hidden = true;
+    anchor.parentNode.insertBefore(sec, anchor);
+
+    var url = cfg.SUPABASE_URL.replace(/\/$/, '') + '/rest/v1/blog_posts?select=slug,title,excerpt,category,cover_url,read_time,published_at' +
+      '&published=eq.true&published_at=lte.' + encodeURIComponent(new Date().toISOString()) + '&order=published_at.desc&limit=3';
+    fetch(url, { headers: { apikey: cfg.SUPABASE_ANON_KEY, Authorization: 'Bearer ' + cfg.SUPABASE_ANON_KEY } })
+      .then(function (r) { if (!r.ok) throw new Error('blog'); return r.json(); })
+      .then(function (posts) {
+        if (!posts.length) return;
+        var cards = posts.map(function (p, i) {
+          var thumb = p.cover_url
+            ? '<img src="' + esc(p.cover_url) + '" alt="' + esc(p.title) + '" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">'
+            : '<svg class="art" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true">' + ART[i % ART.length] + '</svg>';
+          return '<a class="post-card" href="/blog/' + encodeURIComponent(p.slug) + '"><div class="thumb">' + thumb + '</div><span class="cat">' + esc(p.category) + '</span><h3>' + esc(p.title) + '</h3><p>' + esc(p.excerpt) + '</p>' +
+            '<div class="post-meta"><span>' + icon('calendar') + fmt(p.published_at) + '</span>' + (p.read_time ? '<span>' + icon('clock') + esc(p.read_time) + '</span>' : '') + '</div>' +
+            '<span class="read">Read more ' + icon('arrow') + '</span></a>';
+        }).join('');
+        sec.innerHTML = '<div class="container"><div class="sec-head split"><div><span class="pill">' + icon('pen') + ' From the blog</span><h2 style="margin-top:18px">Latest articles.</h2></div>' +
+          '<p>Practical notes on video, motion and design.</p></div><div class="post-grid" style="margin-top:0">' + cards + '</div>' +
+          '<div class="mt-l"><a class="link-arrow" href="blog.html">Read all articles ' + icon('arrow') + '</a></div></div>';
+        sec.hidden = false;
+      })
+      .catch(function () { /* the home page works fine without this section */ });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
+
+/* Design projects (Behance style) loader */
+(function () {
+  if (!document.querySelector('[data-work-grid]')) return;
+  var s = document.createElement('script');
+  s.src = 'assets/js/design-projects.js?v=2';
+  s.defer = true;
+  document.body.appendChild(s);
 })();
